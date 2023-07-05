@@ -19,16 +19,48 @@ def ekstraksi_data():
         return None
     if content.status_code == 200 :
         soup = bs4.BeautifulSoup(content.text, 'html.parser')
-        result=soup.find(span , {'class' : 'waktu'})
+        result = soup.find('span' , {'class' : 'waktu'}).text
+        result = result.split(', ')
+        Tanggal = result[0]
+        Waktu = result [1]
+
+        result = soup.find('div', {'class' : 'col-md-6 col-xs-6 gempabumi-detail no-padding'})
+        result = result.findChildren('li')
+        i = 0
+        Magnitudo = None
+        Kedalaman = None
+        LS = None
+        BT = None
+        Lokasi = None
+        Dirasakan = None
+
+        for res in result:
+
+            if i == 1 :
+                Magnitudo = res.text
+            elif i == 2:
+                Kedalaman = res.text
+            elif i == 3:
+                koordinat = res.text.split(' - ')
+                LS = koordinat[0]
+                BT = koordinat [1]
+            elif i == 4:
+                Lokasi = res.text
+
+            elif i == 5:
+                Dirasakan = res.text
+
+            i = i +1
+
 
         Hasil = {
-            'Tanggal' : '19 Juni 2023',
-            'Waktu' : '12:15:50 WIB',
-            'Magnitudo' : 3.4 ,
-            'Kedalaman' : '10 KM',
-            'Lokasi' : { 'LU':1.17 , 'BT':121.07,},
-            'Keterangan' : 'Pusat gempa berada di darat 21 km Barat Lakea',
-            'Efek' : 'Dirasakan (Skala MMI): II-III Tolitoli'
+            'Tanggal' : Tanggal,
+            'Waktu' : Waktu,
+            'Magnitudo' : Magnitudo,
+            'Kedalaman' : Kedalaman,
+            'Koordinat' : {'LS' : LS , 'BT' : BT},
+            'Lokasi' : Lokasi,
+            'Dirasakan' : Dirasakan
 
         }
         return Hasil
@@ -48,6 +80,6 @@ def tampilkan_data(result):
     print(f"Waktu: {result['Waktu']}")
     print(f"Magnitudo: {result['Magnitudo']}")
     print(f"Kedalaman: {result['Kedalaman']}")
-    print(f"Lokasi: LU= {result['Lokasi']['LU']} , BT= {result['Lokasi']['BT']}")
-    print(f"Keterangan: {result['Keterangan']}")
-    print(f"Efek: {result['Efek']}")
+    print(f"Koordinat: LS= {result['Koordinat']['LS']} , BT= {result['Koordinat']['BT']}")
+    print(f"Lokasi: {result['Lokasi']}")
+    print(f"Dirasakan: {result['Dirasakan']}")
